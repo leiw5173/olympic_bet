@@ -41,7 +41,7 @@ const { developmentChains } = require("../helper-hardhat-config");
           const amount = ethers.parseEther("10");
           await olympicBet.connect(a).payEntryFee({ value: amount });
         });
-        it("should create a right event", async () => {
+        it("Should create a right event", async () => {
           const prize = ethers.parseEther("10");
           const question = "Which country will win the most gold medals?";
           const countries = [
@@ -68,6 +68,8 @@ const { developmentChains } = require("../helper-hardhat-config");
             status,
           ] = await olympicBet.getE(1);
 
+          const eventCount = await olympicBet.getEventCount();
+
           assert.equal(eventId, 1);
           assert.equal(setPrize, prize);
           assert.equal(setQuestion, question);
@@ -78,6 +80,85 @@ const { developmentChains } = require("../helper-hardhat-config");
           assert.equal(setCountries[4], countries[4]);
           assert.equal(setDeadline, deadline);
           assert.equal(status, 0);
+          assert.equal(eventCount, 2);
+        });
+        it("Should emit EventCreated event", async () => {
+          const prize = ethers.parseEther("10");
+          const question = "Which country will win the most gold medals?";
+          const countries = [
+            "France",
+            "Germany",
+            "Italy",
+            "Spain",
+            "United Kingdom",
+          ];
+          const deadline = 1723302000;
+          await expect(
+            olympicBet
+              .connect(deployer)
+              .createEvent(prize, question, countries, deadline, {
+                value: prize,
+              })
+          )
+            .to.emit(olympicBet, "EventCreated")
+            .withArgs(1, prize, question, countries, deadline, 0);
+        });
+        it("Should revert if not deployer call the function", async () => {
+          const prize = ethers.parseEther("10");
+          const question = "Which country will win the most gold medals?";
+          const countries = [
+            "France",
+            "Germany",
+            "Italy",
+            "Spain",
+            "United Kingdom",
+          ];
+          const deadline = 1723302000;
+          await expect(
+            olympicBet
+              .connect(a)
+              .createEvent(prize, question, countries, deadline, {
+                value: prize,
+              })
+          ).to.be.revertedWith("Not authorized");
+        });
+        it("Should revert if deadline is less than current time", async () => {
+          const prize = ethers.parseEther("10");
+          const question = "Which country will win the most gold medals?";
+          const countries = [
+            "France",
+            "Germany",
+            "Italy",
+            "Spain",
+            "United Kingdom",
+          ];
+          const deadline = 1623302000;
+          await expect(
+            olympicBet
+              .connect(deployer)
+              .createEvent(prize, question, countries, deadline, {
+                value: prize,
+              })
+          ).to.be.revertedWith("Deadline must be in the future");
+        });
+        it("Should revert if not enough GAS", async () => {
+          const prize = ethers.parseEther("10");
+          const question = "Which country will win the most gold medals?";
+          const countries = [
+            "France",
+            "Germany",
+            "Italy",
+            "Spain",
+            "United Kingdom",
+          ];
+          const deadline = 1723302000;
+          await expect(
+            olympicBet
+              .connect(deployer)
+              .createEvent(prize, question, countries, deadline, {
+                value: ethers.parseEther("9"),
+              })
+          ).to.be.revertedWith("Please send enough GAS to contract");
         });
       });
     });
