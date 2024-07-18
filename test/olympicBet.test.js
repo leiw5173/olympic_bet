@@ -435,4 +435,51 @@ const { developmentChains } = require("../helper-hardhat-config");
           ).to.be.revertedWith("No winners to pay");
         });
       });
+      describe("Withdraw Funds", function () {
+        beforeEach(async () => {
+          // 创建区块链状态快照
+          snapshotId = await ethers.provider.send("evm_snapshot", []);
+
+          const amount = ethers.parseEther("10");
+          await olympicBet.connect(a).payEntryFee({ value: amount });
+        });
+        afterEach(async () => {
+          // 恢复区块链状态
+          await ethers.provider.send("evm_revert", [snapshotId]);
+        });
+        it("Should withdraw funds successfully", async () => {
+          const newTimestamp = 1723392001;
+          await ethers.provider.send("evm_setNextBlockTimestamp", [
+            newTimestamp,
+          ]);
+          await ethers.provider.send("evm_mine");
+          const aBalanceBefore = await a.provider.getBalance(a.address);
+          const balanceOfABefore = await olympicBet.getBalance(a.address);
+          const tx = await olympicBet.connect(a).withdrawFunds();
+          const receipt = await tx.wait();
+          const gasCost = BigInt(receipt.gasUsed) * BigInt(receipt.gasPrice);
+          const aBalanceAfter = await a.provider.getBalance(a.address);
+          const balanceOfAAfter = await olympicBet.getBalance(a.address);
+          assert.equal(
+            aBalanceAfter - aBalanceBefore,
+            balanceOfABefore - gasCost
+          );
+          assert.equal(balanceOfAAfter, 0);
+        });
+        it("Should revert if time is not reached", async () => {
+          expect(olympicBet.connect(a).withdrawFunds()).to.be.revertedWith(
+            "Olympic is not over yet!"
+          );
+        });
+        it("Should revert if not enough balance", async () => {
+          const newTimestamp = 1723392001;
+          await ethers.provider.send("evm_setNextBlockTimestamp", [
+            newTimestamp,
+          ]);
+          await ethers.provider.send("evm_mine");
+          await expect(
+            olympicBet.connect(b).withdrawFunds()
+          ).to.be.revertedWith("You have no balance to withdraw");
+        });
+      });
     });
