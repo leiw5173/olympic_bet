@@ -274,10 +274,18 @@ const { developmentChains } = require("../helper-hardhat-config");
           await olympicBet.connect(d).placeBet(eventId, country1);
           await olympicBet.connect(e).placeBet(eventId, country1);
 
+          // 创建区块链状态快照
+          snapshotId = await ethers.provider.send("evm_snapshot", []);
+
+          const newTimestamp = 1723402001;
           await ethers.provider.send("evm_setNextBlockTimestamp", [
             newTimestamp,
           ]);
           await ethers.provider.send("evm_mine");
+        });
+        afterEach(async () => {
+          // 恢复区块链状态
+          await ethers.provider.send("evm_revert", [snapshotId]);
         });
         it("Should set event winners correctly", async () => {
           const eventId = 1;
@@ -285,14 +293,46 @@ const { developmentChains } = require("../helper-hardhat-config");
           await olympicBet
             .connect(deployer)
             .setEventWinners(eventId, rightAnswer);
-          const [, , , , , , , winners, status] = await olympicBet.getE(
-            eventId
-          );
+          const [, , , , , , winners, status] = await olympicBet.getE(eventId);
           assert.equal(winners[0], a.address);
           assert.equal(winners[1], b.address);
           assert.equal(winners[2], c.address);
           assert.equal(winners.length, 3);
           assert.equal(status, 1);
+        });
+        it("Should emit EventWinnersSet event", async () => {
+          const eventId = 1;
+          const rightAnswer = "France";
+          await expect(
+            olympicBet.connect(deployer).setEventWinners(eventId, rightAnswer)
+          )
+            .to.emit(olympicBet, "EventWinnerSet")
+            .withArgs(eventId, [a.address, b.address, c.address], 1);
+        });
+        it("Should revert if event status is wrong", async () => {
+          const eventId = 1;
+          const rightAnswer = "France";
+          await olympicBet
+            .connect(deployer)
+            .setEventWinners(eventId, rightAnswer);
+          await expect(
+            olympicBet.connect(deployer).setEventWinners(eventId, rightAnswer)
+          ).to.be.revertedWith("Even Status should be Open");
+        });
+        it("Should revert if not deployer call the function", async () => {
+          const eventId = 1;
+          const rightAnswer = "France";
+          await expect(
+            olympicBet.connect(a).setEventWinners(eventId, rightAnswer)
+          ).to.be.revertedWith("Not authorized");
+        });
+        it("Should revert if not reach the deadline", async () => {
+          const eventId = 1;
+          const rightAnswer = "France";
+          await ethers.provider.send("evm_revert", [snapshotId]);
+          await expect(
+            olympicBet.connect(deployer).setEventWinners(eventId, rightAnswer)
+          ).to.be.revertedWith("Event hasn't finished yet!");
         });
       });
     });
