@@ -335,4 +335,104 @@ const { developmentChains } = require("../helper-hardhat-config");
           ).to.be.revertedWith("Event hasn't finished yet!");
         });
       });
+      describe("Pay Winners", function () {
+        beforeEach(async () => {
+          const prize = ethers.parseEther("10");
+          const question = "Which country will win the most gold medals?";
+          const countries = [
+            "France",
+            "Germany",
+            "Italy",
+            "Spain",
+            "United Kingdom",
+          ];
+          const deadline = 1723402000;
+          await olympicBet
+            .connect(deployer)
+            .createEvent(prize, question, countries, deadline, {
+              value: prize,
+            });
+          const amount = ethers.parseEther("10");
+          await olympicBet.connect(a).payEntryFee({ value: amount });
+          await olympicBet.connect(b).payEntryFee({ value: amount });
+          await olympicBet.connect(c).payEntryFee({ value: amount });
+          await olympicBet.connect(d).payEntryFee({ value: amount });
+          await olympicBet.connect(e).payEntryFee({ value: amount });
+
+          const eventId = 1;
+          const country = "France";
+          const country1 = "Germany";
+
+          await olympicBet.connect(a).placeBet(eventId, country);
+          await olympicBet.connect(b).placeBet(eventId, country);
+          await olympicBet.connect(c).placeBet(eventId, country);
+          await olympicBet.connect(d).placeBet(eventId, country1);
+          await olympicBet.connect(e).placeBet(eventId, country1);
+
+          // 创建区块链状态快照
+          snapshotId = await ethers.provider.send("evm_snapshot", []);
+
+          const newTimestamp = 1723402001;
+          await ethers.provider.send("evm_setNextBlockTimestamp", [
+            newTimestamp,
+          ]);
+          await ethers.provider.send("evm_mine");
+        });
+        afterEach(async () => {
+          // 恢复区块链状态
+          await ethers.provider.send("evm_revert", [snapshotId]);
+        });
+        it("Should pay winners successfully", async () => {
+          const eventId = 1;
+          const rightAnswer = "France";
+          await olympicBet
+            .connect(deployer)
+            .setEventWinners(eventId, rightAnswer);
+
+          const aBalanceBefore = await a.provider.getBalance(a.address);
+          const bBalanceBefore = await ethers.provider.getBalance(b.address);
+          const cBalanceBefore = await ethers.provider.getBalance(c.address);
+          await olympicBet.connect(deployer).payWinners(eventId);
+          const aBalanceAfter = await ethers.provider.getBalance(a.address);
+          const bBalanceAfter = await ethers.provider.getBalance(b.address);
+          const cBalanceAfter = await ethers.provider.getBalance(c.address);
+
+          const [, , , , , , , status] = await olympicBet.getE(eventId);
+          assert.equal(status, 2);
+          assert.equal(
+            aBalanceAfter - aBalanceBefore,
+            ethers.parseEther("3.333333333333333333")
+          );
+          assert.equal(
+            bBalanceAfter - bBalanceBefore,
+            ethers.parseEther("3.333333333333333333")
+          );
+          assert.equal(
+            cBalanceAfter - cBalanceBefore,
+            ethers.parseEther("3.333333333333333333")
+          );
+        });
+        it("Should emit WinnersPaid event", async () => {
+          const eventId = 1;
+          const rightAnswer = "France";
+          await olympicBet
+            .connect(deployer)
+            .setEventWinners(eventId, rightAnswer);
+
+          await expect(olympicBet.connect(deployer).payWinners(eventId))
+            .to.emit(olympicBet, "WinnersPaid")
+            .withArgs(eventId, 2);
+        });
+        it("Should revert if no winners to pay", async () => {
+          const eventId = 1;
+          const rightAnswer = "England";
+          await olympicBet
+            .connect(deployer)
+            .setEventWinners(eventId, rightAnswer);
+
+          await expect(
+            olympicBet.connect(deployer).payWinners(eventId)
+          ).to.be.revertedWith("No winners to pay");
+        });
+      });
     });

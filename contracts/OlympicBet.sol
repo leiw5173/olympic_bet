@@ -213,10 +213,6 @@ contract OlympicBet {
     function payWinners(uint256 _eventId) public payable onlyOwner {
         Event storage currentEvent = events[_eventId];
         require(currentEvent.winners.length != 0, "No winners to pay");
-        require(
-            currentEvent.status == Status.Finished,
-            "Event is not finished yet!"
-        );
 
         uint256 individualPrize = currentEvent.prize /
             currentEvent.winners.length;
