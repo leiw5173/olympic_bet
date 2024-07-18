@@ -35,10 +35,12 @@ contract OlympicBet {
     mapping(address => bool) private paidEntryFee;
     uint256 private eventCount = 1;
 
+    // Constant variables part
     address private immutable OWNER;
     uint256 public constant ENTRY_FEE = 10 ether;
     uint256 private constant OLYMPIC_END_DAY = 1723392000;
 
+    // modifier part
     modifier onlyOwner() {
         require(msg.sender == OWNER, "Not authorized");
         _;
@@ -65,6 +67,7 @@ contract OlympicBet {
         _;
     }
 
+    // event part
     event EntryFeePaid(address indexed user, uint256 amount);
     event EventCreated(
         uint256 indexed eventId,
@@ -241,8 +244,33 @@ contract OlympicBet {
         emit FundWithdrawn(msg.sender, amount);
     }
 
-    function getEvent(uint256 _eventId) public view returns (Event memory) {
-        return events[_eventId];
+    function getE(
+        uint256 _eventId
+    )
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            string memory,
+            string[] memory,
+            uint256,
+            address[] memory,
+            address[] memory,
+            Status
+        )
+    {
+        Event memory evenT = events[_eventId];
+        return (
+            evenT.eventId,
+            evenT.prize,
+            evenT.question,
+            evenT.countries,
+            evenT.deadline,
+            evenT.participants,
+            evenT.winners,
+            evenT.status
+        );
     }
 
     function getBets(address _user) public view returns (Bet memory) {

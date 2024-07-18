@@ -51,17 +51,33 @@ const { developmentChains } = require("../helper-hardhat-config");
             "Spain",
             "United Kingdom",
           ];
-          const deadline = "1723392000";
+          const deadline = 1723302000;
           await olympicBet
             .connect(deployer)
-            .createEvent(prize, question, countries, deadline);
-          const event = await olympicBet.getEvent(1);
-          assert.equal(event.eventId, 1);
-          assert.equal(event.prize, prize);
-          assert.equal(event.question, question);
-          assert.equal(event.countries.length, countries.length);
-          assert.equal(event.deadline, deadline);
-          assert.equal(event.status, 0);
+            .createEvent(prize, question, countries, deadline, {
+              value: prize,
+            });
+          const [
+            eventId,
+            setPrize,
+            setQuestion,
+            setCountries,
+            setDeadline,
+            ,
+            ,
+            status,
+          ] = await olympicBet.getE(1);
+
+          assert.equal(eventId, 1);
+          assert.equal(setPrize, prize);
+          assert.equal(setQuestion, question);
+          assert.equal(setCountries[0], countries[0]);
+          assert.equal(setCountries[1], countries[1]);
+          assert.equal(setCountries[2], countries[2]);
+          assert.equal(setCountries[3], countries[3]);
+          assert.equal(setCountries[4], countries[4]);
+          assert.equal(setDeadline, deadline);
+          assert.equal(status, 0);
         });
       });
     });
