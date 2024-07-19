@@ -25,20 +25,23 @@ contract OlympicBet {
 
     // Define the structure of each bet
     struct Bet {
+        uint256 eventId;
         string prediction;
         bool isPlaced;
     }
 
-    mapping(address => Bet) private bets;
+    mapping(address => mapping(uint256 => Bet)) private bets;
     mapping(address => uint256) private balance;
     mapping(uint256 => Event) private events;
     mapping(address => bool) private paidEntryFee;
     uint256 private eventCount = 1;
 
+    // Constant variables part
     address private immutable OWNER;
     uint256 public constant ENTRY_FEE = 10 ether;
     uint256 private constant OLYMPIC_END_DAY = 1723392000;
 
+    // modifier part
     modifier onlyOwner() {
         require(msg.sender == OWNER, "Not authorized");
         _;
@@ -50,10 +53,7 @@ contract OlympicBet {
     }
 
     modifier beforeDeadline(uint256 _eventId) {
-        require(
-            block.timestamp < events[_eventId].deadline,
-            "Event is closed for this event"
-        );
+        require(block.timestamp < events[_eventId].deadline, "Event has ended");
         _;
     }
 
@@ -65,6 +65,7 @@ contract OlympicBet {
         _;
     }
 
+    // event part
     event EntryFeePaid(address indexed user, uint256 amount);
     event EventCreated(
         uint256 indexed eventId,
@@ -106,6 +107,7 @@ contract OlympicBet {
             "You need to deposite 10 GAS to participate!"
         );
         balance[msg.sender] += msg.value;
+        paidEntryFee[msg.sender] = true;
         emit EntryFeePaid(msg.sender, msg.value);
     }
 
@@ -162,9 +164,8 @@ contract OlympicBet {
         uint256 _eventId,
         string memory _prediction
     ) public hasPaidEntryFee beforeDeadline(_eventId) {
-        require(events[_eventId].status == Status.Open, "Event closed!");
-        require(!bets[msg.sender].isPlaced, "Bet already placed");
-        bets[msg.sender] = Bet(_prediction, true);
+        require(!bets[msg.sender][_eventId].isPlaced, "Bet already placed");
+        bets[msg.sender][_eventId] = Bet(_eventId, _prediction, true);
         events[_eventId].participants.push(msg.sender);
         emit BetPlaced(_eventId, _prediction, true, msg.sender);
     }
@@ -189,8 +190,9 @@ contract OlympicBet {
         for (uint256 i = 0; i < currentEvent.participants.length; i++) {
             address participant = currentEvent.participants[i];
             if (
-                keccak256(abi.encodePacked(bets[participant].prediction)) ==
-                keccak256(abi.encodePacked(_rightAnswer))
+                keccak256(
+                    abi.encodePacked(bets[participant][_eventId].prediction)
+                ) == keccak256(abi.encodePacked(_rightAnswer))
             ) {
                 currentEvent.winners.push(participant);
             }
@@ -211,10 +213,6 @@ contract OlympicBet {
     function payWinners(uint256 _eventId) public payable onlyOwner {
         Event storage currentEvent = events[_eventId];
         require(currentEvent.winners.length != 0, "No winners to pay");
-        require(
-            currentEvent.status == Status.Finished,
-            "Event is not finished yet!"
-        );
 
         uint256 individualPrize = currentEvent.prize /
             currentEvent.winners.length;
@@ -241,12 +239,40 @@ contract OlympicBet {
         emit FundWithdrawn(msg.sender, amount);
     }
 
-    function getEvent(uint256 _eventId) public view returns (Event memory) {
-        return events[_eventId];
+    function getE(
+        uint256 _eventId
+    )
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            string memory,
+            string[] memory,
+            uint256,
+            address[] memory,
+            address[] memory,
+            Status
+        )
+    {
+        Event memory evenT = events[_eventId];
+        return (
+            evenT.eventId,
+            evenT.prize,
+            evenT.question,
+            evenT.countries,
+            evenT.deadline,
+            evenT.participants,
+            evenT.winners,
+            evenT.status
+        );
     }
 
-    function getBets(address _user) public view returns (Bet memory) {
-        return bets[_user];
+    function getBet(
+        address _user,
+        uint256 _eventId
+    ) public view returns (Bet memory) {
+        return bets[_user][_eventId];
     }
 
     function getBalance(address _user) public view returns (uint256) {
