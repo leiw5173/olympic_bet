@@ -15,6 +15,8 @@ module.exports = {
       url: NEOX_TESTNET_RPC_URL,
       chainId: 12227332,
       accounts: [DEPLOYER_PRIV_KEY, ALICE_PRIV_KEY, BOB_PRIV_KEY],
+      gas: 25e9,
+      gasPrice: 20e10,
     },
   },
 };
