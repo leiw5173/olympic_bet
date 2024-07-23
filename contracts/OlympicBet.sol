@@ -34,10 +34,11 @@ contract OlympicBet {
     mapping(address => uint256) private balance;
     mapping(uint256 => Event) private events;
     mapping(address => bool) private paidEntryFee;
-    uint256 private eventCount = 1;
+    uint256 private eventCount;
+    bool private initialized;
 
     // Constant variables part
-    address private immutable OWNER;
+    address private OWNER;
     uint256 public constant ENTRY_FEE = 10 ether;
     uint256 private constant OLYMPIC_END_DAY = 1723392000;
 
@@ -89,8 +90,16 @@ contract OlympicBet {
     event WinnersPaid(uint256 indexed eventId, Status status);
     event FundWithdrawn(address indexed user, uint256 amount);
 
-    constructor() {
+    // constructor() {
+    //     OWNER = msg.sender;
+    // }
+
+    // Proxy Initializer
+    function initialize() public {
+        require(!initialized, "Contract instance has already been initialized");
+        initialized = true;
         OWNER = msg.sender;
+        eventCount = 1;
     }
 
     /**
@@ -106,6 +115,7 @@ contract OlympicBet {
             msg.value == ENTRY_FEE,
             "You need to deposite 10 GAS to participate!"
         );
+        require(balance[msg.sender] != ENTRY_FEE, "You have paid entry fee");
         balance[msg.sender] += msg.value;
         paidEntryFee[msg.sender] = true;
         emit EntryFeePaid(msg.sender, msg.value);
