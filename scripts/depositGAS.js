@@ -9,6 +9,11 @@ async function main() {
 
   const olympicBet = await ethers.getContractAt("OlympicBet", LOCAL_PROXY_ADDR);
 
+  const tx1 = await olympicBet
+    .connect(alice)
+    .payEntryFee({ value: ethers.parseEther("10") });
+  await tx1.wait();
+
   const tx = await olympicBet
     .connect(bob)
     .payEntryFee({ value: ethers.parseEther("10") });
