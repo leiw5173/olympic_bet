@@ -1,5 +1,5 @@
 const { assert, expect } = require("chai");
-const { ethers, network } = require("hardhat");
+const { ethers, network, upgrades } = require("hardhat");
 const { developmentChains } = require("../helper-hardhat-config");
 
 !developmentChains.includes(network.name)
@@ -12,7 +12,7 @@ const { developmentChains } = require("../helper-hardhat-config");
       beforeEach(async () => {
         [deployer, a, b, c, d, e] = await ethers.getSigners();
         const OlympiBet = await ethers.getContractFactory("OlympicBet");
-        olympicBet = await OlympiBet.deploy();
+        olympicBet = await upgrades.deployProxy(OlympiBet, []);
       });
 
       describe("Pay Entry Fee", function () {
