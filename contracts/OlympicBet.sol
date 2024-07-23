@@ -115,6 +115,7 @@ contract OlympicBet {
             msg.value == ENTRY_FEE,
             "You need to deposite 10 GAS to participate!"
         );
+        require(balance[msg.sender] != ENTRY_FEE, "You have paid entry fee");
         balance[msg.sender] += msg.value;
         paidEntryFee[msg.sender] = true;
         emit EntryFeePaid(msg.sender, msg.value);
