@@ -8,17 +8,17 @@ const LOCAL_PROXY_ADDR = process.env.LOCAL_PROXY_ADDR;
 async function main() {
   const [deployer, alice, bob] = await ethers.getSigners();
 
-  const olympicBet = await ethers.getContractAt("OlympicBet", LOCAL_PROXY_ADDR);
-  const countries = ["Spain", "France", "Germany", "Italy"];
+  const olympicBet = await ethers.getContractAt("OlympicBet", PROXY_ADDR);
+  const countries = ["Spain", "France", "Germany", "Italy", "China"];
 
   const tx = await olympicBet
     .connect(deployer)
     .createEvent(
-      ethers.parseEther("10"),
-      "Who is the winner of swiming sport",
+      ethers.parseEther("1"),
+      "Who is the winner of test game?",
       countries,
-      1723402000,
-      { value: ethers.parseEther("10") }
+      1721959200,
+      { value: ethers.parseEther("1") }
     );
   await tx.wait();
 
@@ -31,7 +31,7 @@ async function main() {
     participants,
     winners,
     status,
-  ] = await olympicBet.getE(1);
+  ] = await olympicBet.getE(5);
   console.log("Event ID: ", eventId);
   console.log("Prize: ", ethers.formatEther(prize));
   console.log("Question: ", question);
