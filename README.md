@@ -5,7 +5,7 @@
 ### Neo X testnet
 
 - proxy: 0x843A9C9d1f3B148a1dBB3D62705aaD24f3658676
-- contract: 0x54F969dFf6e440B2A7eB1A71571Ef2750152a4a6
+- contract: 0x369f60066d721fD2632FdB9F3Da64EE43A8aDd73
 
 ### Neo X Mainnet
 

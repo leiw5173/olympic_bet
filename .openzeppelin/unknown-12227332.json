@@ -206,6 +206,205 @@
         },
         "namespaces": {}
       }
+    },
+    "14818124083e9de58ced277ec8d0b41ac98e3a6205ac7d5db51fcfa2df7ae980": {
+      "address": "0x369f60066d721fD2632FdB9F3Da64EE43A8aDd73",
+      "txHash": "0x0c363640fdc3299a94a5c2fb1f0c74626b359afc739a603cb833b99229b6c54b",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "bets",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(Bet)33_storage))",
+            "contract": "OlympicBetV2",
+            "src": "contracts/OlympicBetV2.sol:33"
+          },
+          {
+            "label": "balance",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "OlympicBetV2",
+            "src": "contracts/OlympicBetV2.sol:34"
+          },
+          {
+            "label": "events",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_uint256,t_struct(Event)26_storage)",
+            "contract": "OlympicBetV2",
+            "src": "contracts/OlympicBetV2.sol:35"
+          },
+          {
+            "label": "paidEntryFee",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "OlympicBetV2",
+            "src": "contracts/OlympicBetV2.sol:36"
+          },
+          {
+            "label": "eventCount",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256",
+            "contract": "OlympicBetV2",
+            "src": "contracts/OlympicBetV2.sol:37"
+          },
+          {
+            "label": "initialized",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_bool",
+            "contract": "OlympicBetV2",
+            "src": "contracts/OlympicBetV2.sol:38"
+          },
+          {
+            "label": "OWNER",
+            "offset": 1,
+            "slot": "5",
+            "type": "t_address",
+            "contract": "OlympicBetV2",
+            "src": "contracts/OlympicBetV2.sol:41"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_string_storage)dyn_storage": {
+            "label": "string[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_enum(Status)5": {
+            "label": "enum OlympicBetV2.Status",
+            "members": [
+              "Open",
+              "Finished",
+              "Paid"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(Bet)33_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct OlympicBetV2.Bet))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Bet)33_storage)": {
+            "label": "mapping(uint256 => struct OlympicBetV2.Bet)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Event)26_storage)": {
+            "label": "mapping(uint256 => struct OlympicBetV2.Event)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Bet)33_storage": {
+            "label": "struct OlympicBetV2.Bet",
+            "members": [
+              {
+                "label": "eventId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "prediction",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "isPlaced",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(Event)26_storage": {
+            "label": "struct OlympicBetV2.Event",
+            "members": [
+              {
+                "label": "eventId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "prize",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "question",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "countries",
+                "type": "t_array(t_string_storage)dyn_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "deadline",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "participants",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "winners",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(Status)5",
+                "offset": 0,
+                "slot": "7"
+              }
+            ],
+            "numberOfBytes": "256"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {}
+      }
     }
   }
 }
