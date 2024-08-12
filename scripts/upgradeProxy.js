@@ -2,7 +2,7 @@ const { ethers, upgrades } = require("hardhat");
 require("dotenv").config();
 
 async function main() {
-  const PROXY_ADDR = "0x843A9C9d1f3B148a1dBB3D62705aaD24f3658676";
+  const PROXY_ADDR = "0x1fc91EA040a5A7f85d3b7a31AD9f676dCde6835a";
 
   const OlympicBetV2 = await ethers.getContractFactory("OlympicBetV2");
   console.log("Upgrading OlympicBetV2...");

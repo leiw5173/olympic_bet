@@ -16,7 +16,7 @@ async function main() {
 
   const tx = await olympicBet
     .connect(deployer)
-    .withdrawGAS(ethers.parseEther("1"));
+    .withdrawGAS(ethers.parseEther("35"));
   await tx.wait();
 
   console.log("GAS withdraw successfully!");
