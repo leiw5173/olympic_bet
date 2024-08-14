@@ -3,6 +3,7 @@ require("dotenv").config();
 require("@openzeppelin/hardhat-upgrades");
 
 const NEOX_TESTNET_RPC_URL = process.env.NEOX_TESTNET_RPC_URL;
+const NEOX_RPC_URL = process.env.NEOX_RPC_URL;
 const DEPLOYER_PRIV_KEY = process.env.DEPLOYER_PRIV_KEY;
 const ALICE_PRIV_KEY = process.env.ALICE_PRIV_KEY;
 const BOB_PRIV_KEY = process.env.BOB_PRIV_KEY;
@@ -14,6 +15,13 @@ module.exports = {
     neoxt: {
       url: NEOX_TESTNET_RPC_URL,
       chainId: 12227332,
+      accounts: [DEPLOYER_PRIV_KEY, ALICE_PRIV_KEY, BOB_PRIV_KEY],
+      gas: 25e9,
+      gasPrice: 20e10,
+    },
+    neox: {
+      url: NEOX_RPC_URL,
+      chainId: 47763,
       accounts: [DEPLOYER_PRIV_KEY, ALICE_PRIV_KEY, BOB_PRIV_KEY],
       gas: 25e9,
       gasPrice: 20e10,

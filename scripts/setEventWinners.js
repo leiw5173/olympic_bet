@@ -7,13 +7,13 @@ const LOCAL_PROXY_ADDR = process.env.LOCAL_PROXY_ADDR;
 async function main() {
   const [deployer, alice, bob] = await ethers.getSigners();
 
-  const olympicBet = await ethers.getContractAt("OlympicBet", LOCAL_PROXY_ADDR);
+  const olympicBet = await ethers.getContractAt("OlympicBet", PROXY_ADDR);
 
-  const newTimestamp = 1723402001;
-  await ethers.provider.send("evm_setNextBlockTimestamp", [newTimestamp]);
-  await ethers.provider.send("evm_mine");
+  // const newTimestamp = 1723402001;
+  // await ethers.provider.send("evm_setNextBlockTimestamp", [newTimestamp]);
+  // await ethers.provider.send("evm_mine");
 
-  const tx = await olympicBet.connect(deployer).setEventWinners(1, "France");
+  const tx = await olympicBet.connect(deployer).setEventWinners(6, "China");
   await tx.wait();
 
   console.log("Event winners set successfully!");
@@ -27,7 +27,7 @@ async function main() {
     participants,
     winners,
     status,
-  ] = await olympicBet.getE(1);
+  ] = await olympicBet.getE(6);
   console.log("Event ID: ", eventId);
   console.log("Prize: ", ethers.formatEther(prize));
   console.log("Question: ", question);
