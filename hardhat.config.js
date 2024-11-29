@@ -1,6 +1,7 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 require("@openzeppelin/hardhat-upgrades");
+require("@nomicfoundation/hardhat-verify");
 
 const NEOX_TESTNET_RPC_URL = process.env.NEOX_TESTNET_RPC_URL;
 const NEOX_RPC_URL = process.env.NEOX_RPC_URL;
@@ -26,5 +27,29 @@ module.exports = {
       gas: 25e9,
       gasPrice: 20e10,
     },
+  },
+  etherscan: {
+    apiKey: {
+      neoxt: "YOUR_API_KEY",
+      neox: "YOUR_API_KEY",
+    },
+    customChains: [
+      {
+        network: "neoxt",
+        chainId: 12227332,
+        urls: {
+          apiURL: "https://xt4scan.ngd.network/api",
+          browserURL: "https://xt4scan.ngd.network/",
+        },
+      },
+      {
+        network: "neox",
+        chainId: 47763,
+        urls: {
+          apiURL: "https://xexplorer.neo.org/api",
+          browserURL: "https://xexplorer.neo.org/",
+        },
+      },
+    ],
   },
 };
