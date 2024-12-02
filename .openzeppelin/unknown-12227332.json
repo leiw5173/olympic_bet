@@ -90,11 +90,7 @@
           },
           "t_enum(Status)5": {
             "label": "enum OlympicBet.Status",
-            "members": [
-              "Open",
-              "Finished",
-              "Paid"
-            ],
+            "members": ["Open", "Finished", "Paid"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
@@ -289,11 +285,7 @@
           },
           "t_enum(Status)5": {
             "label": "enum OlympicBetV2.Status",
-            "members": [
-              "Open",
-              "Finished",
-              "Paid"
-            ],
+            "members": ["Open", "Finished", "Paid"],
             "numberOfBytes": "1"
           },
           "t_mapping(t_address,t_bool)": {
